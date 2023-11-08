@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameScene.unity
     guid: 1ba4b04fcbb34e744a1ae4fdc251509b
+  - enabled: 1
+    path: Assets/SexyHaRang.unity
+    guid: 694c9991f75051745852a8d641a1fe05
   m_configObjects: {}

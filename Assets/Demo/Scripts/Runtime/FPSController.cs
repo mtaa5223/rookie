@@ -1,4 +1,4 @@
-                
+
 
 using System.Collections.Generic;
 using Kinemation.FPSFramework.Runtime.FPSAnimator;
@@ -208,6 +208,7 @@ namespace Demo.Scripts.Runtime
             animator.Play(Equip);
         }
 
+        [PunRPC]
         private void ChangeWeapon_Internal()
         {
             if (movementState == FPSMovementState.Sprinting) return;
@@ -224,10 +225,9 @@ namespace Demo.Scripts.Runtime
 
             _lastIndex = _index;
             _index = newIndex;
-            if (pv.IsMine)
-            {
-                StartWeaponChange();
-            }
+
+            StartWeaponChange();
+
 
         }
 
@@ -282,21 +282,25 @@ namespace Demo.Scripts.Runtime
         private void Fire()
         {
             if (_hasActiveAction) return;
-            pv.RPC("Fire2", RpcTarget.All);
+            if (GetGun().remainAmmo <= 0)
+            {
+                return;
+            }
 
-        }
-        [PunRPC]
-        public void Fire2()
-        {
+            GetGun().remainAmmo--;
+
+            _hasActiveAction = true;
             GetGun().OnFire();
             recoilComponent.Play();
             PlayCameraShake(shake);
+            _hasActiveAction = false;
         }
 
         private void OnFirePressed()
         {
             if (weapons.Count == 0) return;
             if (_hasActiveAction) return;
+            if (GetGun().remainAmmo <= 0) return;
 
             Fire();
             _bursts = GetGun().burstAmount - 1;
@@ -307,7 +311,7 @@ namespace Demo.Scripts.Runtime
         {
             return weapons[_index];
         }
-        
+
         public void reloadfire()
         {
             pv.RPC("OnFireReleased", RpcTarget.All);
@@ -459,7 +463,8 @@ namespace Demo.Scripts.Runtime
 
             if (Input.GetAxis("Mouse ScrollWheel") != 0)
             {
-
+                //ChangeWeapon_Internal();
+                pv.RPC("ChangeWeapon_Internal", RpcTarget.All);
             }
 
             if (movementState == FPSMovementState.Sprinting)
@@ -486,11 +491,11 @@ namespace Demo.Scripts.Runtime
                 }
             }
 
-                if (Input.GetKeyDown(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 OnFirePressed();
             }
-            
+
 
             if (Input.GetKeyUp(KeyCode.Mouse0))
             {
@@ -520,7 +525,7 @@ namespace Demo.Scripts.Runtime
                     actionState = FPSActionState.PointAiming;
                 }
             }
-        
+
 
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -646,6 +651,7 @@ namespace Demo.Scripts.Runtime
         private void UpdateFiring()
         {
             if (recoilComponent == null) return;
+            if (GetGun().remainAmmo <= 0) return;
 
             if (recoilComponent.fireMode != FireMode.Semi && _fireTimer >= 60f / GetGun().fireRate)
             {
@@ -771,13 +777,7 @@ namespace Demo.Scripts.Runtime
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                //disableInput = !disableInput;
-                //Application.Quit(0);
-            }
-
-            if (!disableInput && pv.IsMine)
+            if (pv.IsMine)
             {
                 UpdateActionInput();
                 UpdateLookInput();
@@ -834,6 +834,11 @@ namespace Demo.Scripts.Runtime
 
 
             //mainCamera.rotation = cameraHolder.rotation * Quaternion.Euler(_freeLookInput.y, _freeLookInput.x, 0f);
+        }
+
+        public void ReloadEnd()
+        {
+            GetGun().remainAmmo = GetGun().maxAmmo;
         }
     }
 }

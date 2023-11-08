@@ -9,15 +9,18 @@ public class PlayerHealth : MonoBehaviour
 {
     public static PlayerHealth Instance;
     [SerializeField] public float playerHp = 20;
-    public int playerNum = 0; // This should be set based on the PhotonView ID.
-    PhotonView pv;
+    public int playerNum = 0;
+    public int otherPlayerNum;
+    public PhotonView pv;
     public Transform players;
-    Image hpbar;
-
+    public Image hpbar;
+    public Image otherHpbar;
+    public GameObject redOcean;
     private TextMeshProUGUI text;
 
     private void Start()
     {
+        redOcean = GameManager.instance.redOcean;
         if (Instance == null)
         {
             Instance = this;
@@ -29,39 +32,51 @@ public class PlayerHealth : MonoBehaviour
         if (pv.ViewID == 1001) // Assuming 1st player has PhotonView ID 1001.
         {
             playerNum = 0;
-            text = GameObject.Find("HpText_1").GetComponent<TextMeshProUGUI>();
+            otherPlayerNum = 1;
+            //text = GameObject.Find("HpText_1").GetComponent<TextMeshProUGUI>();
         }
-        else if (pv.ViewID == 2001) // Assuming 2nd player has PhotonView ID 1002.
+        else if (pv.ViewID == 2001) // Assuming 2nd player has PhotonView ID 2001.
         {
             playerNum = 1;
-            text = GameObject.Find("HpText_2").GetComponent<TextMeshProUGUI>();
+            otherPlayerNum = 0;
+            //text = GameObject.Find("HpText_2").GetComponent<TextMeshProUGUI>();
         }
-        hpbar = GameManager.instance.playerHpBar[playerNum];
+        //hpbar = GameManager.instance.playerHpBar[playerNum];
+        //otherHpbar = GameManager.instance.playerHpBar[otherPlayerNum];
     }
-    private void Update()
-    {
-        Debug.Log(playerHp);
-    }
+
+    //private void Update()
+    //{
+    //    pv.RPC("OtherPlayerHp", RpcTarget.Others);//, playerHp);
+    //}
+    //[PunRPC]
+    //void OtherPlayerHp()//float hp)
+    //{
+    //    //Debug.Log(hp);
+    //    Debug.Log(otherHpbar.fillAmount);
+    //    //otherHpbar.fillAmount = .1f;
+    //}
     public void GetDamage(float _damage)
     {
         if (!GameManager.instance.playerDie)
         {
-            playerHp -= _damage;
-
-            hpbar.fillAmount = Mathf.Clamp(hpbar.fillAmount - _damage * 0.05f, 0f, 1f);
-            pv.RPC("TextRpc", RpcTarget.All);
-            //text.text = playerHp.ToString() + " / 20";
-
-            if (playerHp <= 0)
+            if (pv.IsMine)
             {
-                GameManager.instance.PlayerDie(playerNum);
+                if (playerHp > 0)
+                {
+                    playerHp -= _damage;
+                }
+                //text.text = playerHp.ToString() + " / 20";
+                if (playerHp < 10)
+                {
+                    redOcean.SetActive(true);
+                }
+                if (playerHp <= 0)
+                {
+                    GameManager.instance.PlayerDie(playerNum);
+                }
             }
         }
-    }
-    [PunRPC]
-    public void TextRpc()
-    {
-        text.text = playerHp.ToString() + " / 20";
     }
     public void ResetHp()
     {
@@ -71,6 +86,5 @@ public class PlayerHealth : MonoBehaviour
     public void Hp()
     {
         playerHp = 20;
-        text.text = playerHp.ToString() + " / 20";
     }
 }

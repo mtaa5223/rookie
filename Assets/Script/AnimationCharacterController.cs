@@ -359,6 +359,7 @@ public class AnimationCharacterController : MonoBehaviour
 
                     // apply the gravity to the velocity
                     characterVelocity += Vector3.down * gravityDownForce * Time.deltaTime;
+
                 }
             }
         }
@@ -381,6 +382,7 @@ public class AnimationCharacterController : MonoBehaviour
                 m_LatestImpactSpeed = characterVelocity;
 
                 characterVelocity = Vector3.ProjectOnPlane(characterVelocity, hit.normal);
+                pv.RPC("playerRPC", RpcTarget.All);
             }
         }
         // apply the final calculated velocity value as a character movement
@@ -430,7 +432,14 @@ public class AnimationCharacterController : MonoBehaviour
             //playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition, Vector3.up * m_TargetCharacterHeight * cameraHeightRatio, crouchingSharpness * Time.deltaTime);
         }
     }
-
+    [PunRPC]
+    public void playerRPC()
+    {
+        if (transform.position.y < -10f && gameObject.GetComponent<PlayerHealth>().playerHp > 0)
+        {
+            gameObject.GetComponent<PlayerHealth>().GetDamage(20);
+        }
+    }
     // returns false if there was an obstruction
     bool SetCrouchingState(bool crouched, bool ignoreObstructions)
     {

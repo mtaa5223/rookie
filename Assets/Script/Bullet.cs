@@ -8,10 +8,10 @@ public class Bullet : MonoBehaviour
 
     void Update()
     {
-        lineDeleteTime += Time.deltaTime;
-        if (lineDeleteTime > 0.01f)
-        {
+        //lineDeleteTime += Time.deltaTime;
+        //if (lineDeleteTime > 0.01f)
+        //{
             Destroy(gameObject);
-        }
+        //}
     }
 } 

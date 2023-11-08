@@ -11,6 +11,7 @@ public class MainMenuPhotonManager : MonoBehaviourPunCallbacks
     InputField m_InputField;
     Text m_textConnectLog;
     Text m_textPlayerList;
+    Text m_textTwoPlayerList;
     Button StartButton;
     PhotonView PV;
 
@@ -19,10 +20,11 @@ public class MainMenuPhotonManager : MonoBehaviourPunCallbacks
        
         Screen.SetResolution(1920, 1080, false);
 
-        m_InputField = GameObject.Find("Canvas/InputField").GetComponent<InputField>();
-        m_textPlayerList = GameObject.Find("Canvas/TextPlayerList").GetComponent<Text>();
-        m_textConnectLog = GameObject.Find("Canvas/TextConnectLog").GetComponent<Text>();
-        StartButton = GameObject.Find("Canvas/StartButton").GetComponent<Button>();
+        m_InputField = GameObject.Find("Image/InputField").GetComponent<InputField>();
+        m_textPlayerList = GameObject.Find("Image/TextPlayerList").GetComponent<Text>();
+        m_textConnectLog = GameObject.Find("Image/TextConnectLog").GetComponent<Text>();
+       
+        StartButton = GameObject.Find("Image/StartButton").GetComponent<Button>();
         
         PV = GetComponent<PhotonView>();        
         
@@ -77,7 +79,15 @@ public class MainMenuPhotonManager : MonoBehaviourPunCallbacks
     }
     public void GameReady()
     {
-        PV.RPC("GameStart", RpcTarget.All); //RPC 함수 호출 
+        if (string.IsNullOrEmpty(m_InputField.text))
+        {
+            // Display a message if the InputField is empty
+            m_textConnectLog.text = "아무것도 입력하지 않았습니다. 준비가 안됬어요.";
+        }
+        else
+        {
+            PV.RPC("GameStart", RpcTarget.All); // Start the game if the InputField is not empty
+        }
     }
  
     [PunRPC]

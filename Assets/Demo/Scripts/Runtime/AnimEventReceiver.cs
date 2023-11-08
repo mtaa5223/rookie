@@ -35,5 +35,11 @@ namespace Demo.Scripts.Runtime
         {
             controller.ResetStagedState();
         }
+
+        public void ReloadEnd(int isActive)
+        {
+            controller.SetActionActive(isActive);
+            controller.ReloadEnd();
+        }
     }
 }

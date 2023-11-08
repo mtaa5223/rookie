@@ -16,10 +16,10 @@ public class IngamePhotonManager : MonoBehaviour
         {
             instance = this;
         }
-    } 
+    }
     private void Start()
     {
-        GameObject player = PhotonNetwork.Instantiate("Player", transform.position, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate("Player", new Vector3(-16f, 1, Random.Range(-32,0)), Quaternion.identity);
         players = GameObject.Find("Players").transform;
         player.transform.parent = players;
         if (player.GetComponent<PhotonView>().IsMine)

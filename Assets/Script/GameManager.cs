@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     public int playerScore = 0;
 
     public bool playerDie = false;
+    public bool gameEnd;
     private float sceneChangeTime = 0f;
 
     private void Start()
@@ -128,6 +129,7 @@ public class GameManager : MonoBehaviour
         else
         {
             credit = victory;
+            gameEnd = true;
             pv.RPC("Defeat", RpcTarget.Others);
         }
         StartCoroutine(superIdol());
@@ -142,11 +144,22 @@ public class GameManager : MonoBehaviour
     public void Defeat()
     {
         credit = defeat;
+        gameEnd = true;
         StartCoroutine(superIdol());
     }
 
     IEnumerator superIdol()
     {
+        if (gameEnd)
+        {
+            credit.SetActive(true);
+            Time.timeScale = 0.1f;
+
+            yield return new WaitForSeconds(0.3f);
+
+            Time.timeScale = 1f;
+            PhotonNetwork.LoadLevel(2);
+        }
         playerDie = true;
         credit.SetActive(true);
         Time.timeScale = 0.1f;
@@ -160,14 +173,16 @@ public class GameManager : MonoBehaviour
         playerHpBar[1].fillAmount = 1f;
 
         credit.SetActive(false);
+        redOcean.SetActive(false);
 
         Transform players = IngamePhotonManager.instance.players;
         if (PhotonNetwork.CurrentRoom.PlayerCount == 2)
         {
             Debug.Log("잠시후 재생성됩니다");
-            players.GetChild(0).transform.position = new Vector3(5, 3, 0);
-            players.GetChild(1).transform.position = new Vector3(-5, 3, 0);
+            players.GetChild(0).transform.position = new Vector3(-11, 6, 14);
+            players.GetChild(1).transform.position = new Vector3(-10, 3, 0);
         }
         PlayerHealth.Instance.ResetHp();
     }
+    public GameObject redOcean;
 }
