@@ -74,6 +74,14 @@ MonoBehaviour:
   - OtherPlayerHp
   - ChangeWeapon_Internal
   - playerRPC
+  - playerhpup
+  - dead
+  - dronehps
+  - photonmna
+  - rawd
+  - ResetPlace
+  - FirstReset
+  - SecondReset
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

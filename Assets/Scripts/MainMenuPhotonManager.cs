@@ -17,26 +17,26 @@ public class MainMenuPhotonManager : MonoBehaviourPunCallbacks
 
     void Start()
     {
-       
-        Screen.SetResolution(1920, 1080, false);
+
+        Screen.SetResolution(1920, 1080, true);
 
         m_InputField = GameObject.Find("Image/InputField").GetComponent<InputField>();
         m_textPlayerList = GameObject.Find("Image/TextPlayerList").GetComponent<Text>();
         m_textConnectLog = GameObject.Find("Image/TextConnectLog").GetComponent<Text>();
-       
+
         StartButton = GameObject.Find("Image/StartButton").GetComponent<Button>();
-        
-        PV = GetComponent<PhotonView>();        
-        
+
+        PV = GetComponent<PhotonView>();
+
         m_textConnectLog.text = "접속로그\n";
         StartButton.interactable = false;
     }
-    
+
 
     public override void OnConnectedToMaster()
     {
-       
-      
+
+
 
         PhotonNetwork.LocalPlayer.NickName = m_InputField.text;
         PhotonNetwork.JoinOrCreateRoom("Room1", null, null);
@@ -89,7 +89,7 @@ public class MainMenuPhotonManager : MonoBehaviourPunCallbacks
             PV.RPC("GameStart", RpcTarget.All); // Start the game if the InputField is not empty
         }
     }
- 
+
     [PunRPC]
     public void GameStart()
     {

@@ -12,7 +12,7 @@ namespace Demo.Scripts.Runtime
         Pistol,
         Rifle
     }
-    
+
     public class Weapon : FPSAnimWeapon
     {
         public AnimSequence reloadClip;
@@ -21,7 +21,7 @@ namespace Demo.Scripts.Runtime
 
         private int Amog = 30;
 
-         public int stagedReloadSegment = 0;
+        public int stagedReloadSegment = 0;
 
         [SerializeField] private List<Transform> scopes;
 
@@ -57,7 +57,7 @@ namespace Demo.Scripts.Runtime
             audioSource = GetComponent<AudioSource>();
 
             remainAmmo = maxAmmo;
-            
+
             /*
             var animEvents = reloadClip.clip.events;
 
@@ -92,7 +92,7 @@ namespace Demo.Scripts.Runtime
         {
             if (_stagedSegments == 0) return 0f;
 
-            return (float) stagedReloadSegment / _stagedSegments;
+            return (float)stagedReloadSegment / _stagedSegments;
         }
 
         public override Transform GetAimPoint()
@@ -101,7 +101,7 @@ namespace Demo.Scripts.Runtime
             _scopeIndex = _scopeIndex > scopes.Count - 1 ? 0 : _scopeIndex;
             return scopes[_scopeIndex];
         }
-        
+
         public void OnFire()
         {
             pv.RPC("OnFireRpc", RpcTarget.All);
@@ -122,9 +122,9 @@ namespace Demo.Scripts.Runtime
                 shotBullet.GetComponent<LineRenderer>().SetPosition(0, firePos.position);
                 shotBullet.GetComponent<LineRenderer>().SetPosition(1, hit.point);
 
-                if (hit.transform.CompareTag("Player"))
+                if (hit.transform.CompareTag("Player") || hit.transform.CompareTag("Drone"))
                 {
-                    hit.transform.GetComponent<PlayerHealth>().GetDamage(weaponeDamage);
+                    hit.transform.GetComponent<Health>().GetDamage(weaponeDamage);
                 }
             }
             //_animator.Play("Fire", 0, 0f);
@@ -136,7 +136,7 @@ namespace Demo.Scripts.Runtime
             {
                 return;
             }
-            
+
             _animator.Rebind();
             _animator.Play("Reload", 0);
         }

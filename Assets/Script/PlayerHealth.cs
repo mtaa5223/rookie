@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using TMPro;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : Health
 {
     public static PlayerHealth Instance;
     [SerializeField] public float playerHp = 20;
@@ -56,7 +56,7 @@ public class PlayerHealth : MonoBehaviour
     //    Debug.Log(otherHpbar.fillAmount);
     //    //otherHpbar.fillAmount = .1f;
     //}
-    public void GetDamage(float _damage)
+    public override void GetDamage(float _damage)
     {
         if (!GameManager.instance.playerDie)
         {
@@ -64,7 +64,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 if (playerHp > 0)
                 {
-                    playerHp -= _damage;
+                    pv.RPC("playerhpup", RpcTarget.All, _damage);
                 }
                 //text.text = playerHp.ToString() + " / 20";
                 if (playerHp < 10)
@@ -77,6 +77,13 @@ public class PlayerHealth : MonoBehaviour
                 }
             }
         }
+    }
+    [PunRPC]
+    public void playerhpup(float _damage)
+    {
+        playerHp -= _damage;
+        GameManager.instance.playerHpBar[pv.ViewID == 1001 ? 0 : 1].fillAmount = playerHp / 20f;
+        GameManager.instance.text[pv.ViewID == 1001 ? 0 : 1].text = playerHp.ToString() + " / 20";
     }
     public void ResetHp()
     {

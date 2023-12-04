@@ -7,6 +7,7 @@ using Photon.Pun;
 using System; //For Serializable
 using Photon.Pun.Demo.PunBasics;
 using System.Linq;
+using TMPro;
 /*using static Unity.VisualScripting.Round<TInput, TOutput>;*/
 
 public class GameManager : MonoBehaviour
@@ -21,12 +22,17 @@ public class GameManager : MonoBehaviour
     [Header("Player Hp Bar")]
     public Image[] playerHpBar;
 
+    public TextMeshProUGUI[] text;
+
     [Header("Credits")]
     [SerializeField] GameObject roundWin;
     [SerializeField] GameObject roundLose;
     [SerializeField] GameObject victory;
     [SerializeField] GameObject defeat;
     public GameObject credit;
+
+    [SerializeField] private GameObject hitZoneManager;
+    private GameObject currenthitZoneManager;
 
 
 
@@ -48,6 +54,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        currenthitZoneManager = Instantiate(hitZoneManager);
 
         pv = GetComponent<PhotonView>();
         if (instance == null)
@@ -166,11 +173,19 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.3f);
 
+        // 히트 존 재생성
+        Destroy(currenthitZoneManager);
+        currenthitZoneManager = Instantiate(hitZoneManager);
+
+        // 위치 재설정
+        pv.RPC("photonmna", RpcTarget.All);
         Time.timeScale = 1f;
 
         playerDie = false;
         playerHpBar[0].fillAmount = 1f;
         playerHpBar[1].fillAmount = 1f;
+        text[0].text = "20 / 20";
+        text[1].text = "20 / 20";
 
         credit.SetActive(false);
         redOcean.SetActive(false);
@@ -183,6 +198,13 @@ public class GameManager : MonoBehaviour
             players.GetChild(1).transform.position = new Vector3(-10, 3, 0);
         }
         PlayerHealth.Instance.ResetHp();
+    }
+    [PunRPC]
+
+    public void photonmna()
+    {
+        IngamePhotonManager.instance.ResetPlace();
+
     }
     public GameObject redOcean;
 }

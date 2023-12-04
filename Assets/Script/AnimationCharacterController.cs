@@ -132,7 +132,7 @@ public class AnimationCharacterController : MonoBehaviour
         wallRunComponent = GetComponent<AnimationWallRun>();
 
         //animator = GetComponent<Animator>();
- /*       audioSource = GetComponent<AudioSource>();*/
+        /*       audioSource = GetComponent<AudioSource>();*/
 
         m_Controller.enableOverlapRecovery = true;
 
@@ -162,12 +162,12 @@ public class AnimationCharacterController : MonoBehaviour
                 {
                     float dmgFromFall = Mathf.Lerp(fallDamageAtMinSpeed, fallDamageAtMaxSpeed, fallSpeedRatio);
                     // fall damage SFX
-                  /*  audioSource.PlayOneShot(fallDamageSFX);*/
+                    /*  audioSource.PlayOneShot(fallDamageSFX);*/
                 }
                 else
                 {
                     // land SFX
-                 /*   audioSource.PlayOneShot(landSFX);*/
+                    /*   audioSource.PlayOneShot(landSFX);*/
                 }
 
                 //착지 애니메이션
@@ -184,7 +184,7 @@ public class AnimationCharacterController : MonoBehaviour
 
             HandleCharacterMovement();
         }
-       
+
     }
 
     void OnDie()
@@ -262,7 +262,8 @@ public class AnimationCharacterController : MonoBehaviour
             // converts move input to a worldspace vector based on our character's transform orientation
             Vector3 worldspaceMoveInput = transform.TransformVector(m_InputHandler.GetMoveInput());
 
-            if (pv.IsMine) {
+            if (pv.IsMine)
+            {
                 if (isGrounded || doubleJumpAble || (wallRunComponent != null && wallRunComponent.IsWallRunning()))
                 {
                     if (isGrounded)
@@ -311,7 +312,7 @@ public class AnimationCharacterController : MonoBehaviour
                                 // start by canceling out the vertical component of our velocity
                                 characterVelocity = new Vector3(characterVelocity.x, 0f, characterVelocity.z);
                                 // then, add the jumpSpeed value upwards
-                                characterVelocity += Vector3.up * jumpForce;
+                                characterVelocity += Vector3.up * jumpForce * 1.5f;
 
                                 doubleJumpAble = false;
                             }
@@ -336,15 +337,15 @@ public class AnimationCharacterController : MonoBehaviour
                     if (m_footstepDistanceCounter >= 1f / chosenFootstepSFXFrequency)
                     {
                         m_footstepDistanceCounter = 0f;
-                       /* audioSource.PlayOneShot(footstepSFX);*/
+                        /* audioSource.PlayOneShot(footstepSFX);*/
                     }
 
                     // keep track of distance traveled for footsteps sound
                     m_footstepDistanceCounter += characterVelocity.magnitude * Time.deltaTime;
                 }
             }
-              
-            if(pv.IsMine)
+
+            if (pv.IsMine)
             {
                 if (!isGrounded && (wallRunComponent == null || (wallRunComponent != null && !wallRunComponent.IsWallRunning())))
                 {
@@ -386,7 +387,7 @@ public class AnimationCharacterController : MonoBehaviour
             }
         }
         // apply the final calculated velocity value as a character movement
-       
+
     }
 
     // Returns true if the slope angle represented by the given normal is under the slope angle limit of the character controller
@@ -437,7 +438,7 @@ public class AnimationCharacterController : MonoBehaviour
     {
         if (transform.position.y < -10f && gameObject.GetComponent<PlayerHealth>().playerHp > 0)
         {
-            gameObject.GetComponent<PlayerHealth>().GetDamage(20);
+            gameObject.GetComponent<Health>().GetDamage(20f);
         }
     }
     // returns false if there was an obstruction
